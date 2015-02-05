@@ -18,7 +18,7 @@ from potr.compatcrypto import DSAKey
 # much of this is copied and pasted from:
 # https://github.com/guardianproject/otrfileconverter 
 
-def verifyLen(t):
+def verify_len(t):
     t = t[0]
     if t.len is not None:
         t1len = len(t[1])
@@ -35,16 +35,16 @@ def parse_sexp(data):
 
     decimal = Word("123456789", nums).setParseAction(lambda t: int(t[0]))
     bytes = Word(printables)
-    raw = Group(decimal.setResultsName("len") + Suppress(":") + bytes).setParseAction(verifyLen)
+    raw = Group(decimal.setResultsName("len") + Suppress(":") + bytes).setParseAction(verify_len)
     token = Word(alphanums + "-./_:*+=")
     base64_ = Group(Optional(decimal, default=None).setResultsName("len") + VBAR
                     + OneOrMore(Word(alphanums + "+/=")).setParseAction(lambda t: b64decode("".join(t)))
-                    + VBAR).setParseAction(verifyLen)
+                    + VBAR).setParseAction(verify_len)
 
     hexadecimal = ("#" + OneOrMore(Word(hexnums)) + "#") \
         .setParseAction(lambda t: int("".join(t[1:-1]), 16))
     qString = Group(Optional(decimal, default=None).setResultsName("len") +
-                    dblQuotedString.setParseAction(removeQuotes)).setParseAction(verifyLen)
+                    dblQuotedString.setParseAction(removeQuotes)).setParseAction(verify_len)
     simpleString = raw | token | base64_ | hexadecimal | qString
 
     display = LBRK + simpleString + RBRK
