@@ -23,8 +23,8 @@ def verifyLen(t):
     if t.len is not None:
         t1len = len(t[1])
         if t1len != t.len:
-            raise ParseFatalException, \
-                "invalid data of length %d, expected %s" % (t1len, t.len)
+            raise ParseFatalException(
+                "invalid data of length %d, expected %s" % (t1len, t.len))
     return t[1]
 
 
@@ -57,7 +57,7 @@ def parse_sexp(data):
     try:
         sexpr = sexp.parseString(data)
         return sexpr.asList()[0][1:]
-    except ParseFatalException, pfe:
+    except ParseFatalException as pfe:
         print "Error:", pfe.msg
         print line(pfe.loc, data)
         print pfe.markInputline()
@@ -66,11 +66,8 @@ def parse_sexp(data):
 def parse(filename):
     """parse the otr.private_key S-Expression and return an OTR dict"""
 
-    f = open(filename, 'r')
-    data = ""
-    for line in f.readlines():
-        data += line
-    f.close()
+    with open(filename, 'r') as f:
+        data = ''.join(line for line in f.readlines())
 
     sexplist = parse_sexp(data)
     keydict = dict()
@@ -93,7 +90,7 @@ def parse(filename):
                     key['protocol'] = element[1]
                 elif element[0] == "private-key":
                     if element[1][0] == 'dsa':
-                        key['type'] = 'dsa';
+                        key['type'] = 'dsa'
                         for num in element[1][1:6]:
                             key[num[0]] = num[1]
             keytuple = (key['y'], key['g'], key['p'], key['q'], key['x'])
@@ -117,7 +114,8 @@ if __name__ == "__main__":
     for account in keys:
         gajim_fps[account] = ''
 
-    pidgin_fps = [x.split() for x in open(pidgin_fp_filename)]
+    with open(pidgin_fp_filename, 'r') as f:
+        pidgin_fps = [x.split() for x in f]
     for fp in pidgin_fps:
         if fp[2] == 'prpl-jabber':
             if len(fp) < 5:
@@ -128,6 +126,7 @@ if __name__ == "__main__":
 
     for account in keys:
         serialized_private_key = keys[account]['dsakey'].serializePrivateKey()
-        open(output_dir + '/' + account + '.key3', 'w').write(serialized_private_key)
-        open(output_dir + '/' + account + '.fpr', 'w').write(gajim_fps[account])
-
+        with open(output_dir + '/' + account + '.key3', 'w') as f:
+            f.write(serialized_private_key)
+        with open(output_dir + '/' + account + '.fpr', 'w') as f:
+            f.write(gajim_fps[account])
