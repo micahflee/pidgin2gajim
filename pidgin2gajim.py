@@ -59,7 +59,7 @@ def parse_sexp(data):
         return sexpr.asList()[0][1:]
     except ParseFatalException, pfe:
         print "Error:", pfe.msg
-        print line(pfe.loc, t)
+        print line(pfe.loc, data)
         print pfe.markInputline()
 
 
