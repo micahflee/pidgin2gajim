@@ -1,12 +1,22 @@
 #!/usr/bin/env python
+"""
+Locate existing libpurple (pidgin) otr private keys and fingerprints and
+convert them to gajim format.
+
+Note:
+You have to manually copy the .key3 and .fpr files from the output directory
+into ~/.local/share/gajim/.
+"""
 
 import os
-from pyparsing import *
 from base64 import b64decode
+
+from pyparsing import *
 from potr.utils import bytes_to_long
 from potr.compatcrypto import DSAKey
 
-# much of this is copied and pasted from https://github.com/guardianproject/otrfileconverter 
+# much of this is copied and pasted from:
+# https://github.com/guardianproject/otrfileconverter 
 
 def verifyLen(t):
   t = t[0]
@@ -17,8 +27,9 @@ def verifyLen(t):
         "invalid data of length %d, expected %s" % (t1len, t.len)
   return t[1]
 
+
 def parse_sexp(data):
-  '''parse sexp/S-expression format and return a python list'''
+  """parse sexp/S-expression format and return a python list"""
   # define punctuation literals
   LPAR, RPAR, LBRK, RBRK, LBRC, RBRC, VBAR = map(Suppress, "()[]{}|")
 
@@ -51,8 +62,9 @@ def parse_sexp(data):
     print line(pfe.loc,t)
     print pfe.markInputline()
 
+
 def parse(filename):
-  '''parse the otr.private_key S-Expression and return an OTR dict'''
+  """parse the otr.private_key S-Expression and return an OTR dict"""
 
   f = open(filename, 'r')
   data = ""
@@ -89,6 +101,7 @@ def parse(filename):
       key['fingerprint'] = '{0:040x}'.format(bytes_to_long(key['dsakey'].fingerprint()))
       keydict[name] = key
   return keydict
+
 
 if __name__ == "__main__":
   pidgin_key_filename = os.getenv('HOME')+'/.purple/otr.private_key'
