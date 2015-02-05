@@ -101,8 +101,9 @@ def parse(filename):
 
 
 if __name__ == "__main__":
-    pidgin_key_filename = os.getenv('HOME') + '/.purple/otr.private_key'
-    pidgin_fp_filename = os.getenv('HOME') + '/.purple/otr.fingerprints'
+    home_dir = os.getenv('HOME')
+    pidgin_key_filename =  os.path.join(home_dir, '.purple', 'otr.private_key')
+    pidgin_fp_filename = os.path.join(home_dir, '.purple', 'otr.fingerprints')
 
     output_dir = 'output'
     if not os.path.exists(output_dir):
@@ -126,7 +127,7 @@ if __name__ == "__main__":
 
     for account in keys:
         serialized_private_key = keys[account]['dsakey'].serializePrivateKey()
-        with open(output_dir + '/' + account + '.key3', 'w') as f:
+        with open(os.path.join(output_dir, '%s.key3' % account), 'w') as f:
             f.write(serialized_private_key)
-        with open(output_dir + '/' + account + '.fpr', 'w') as f:
+        with open(os.path.join(output_dir, '%s.fpr' % account), 'w') as f:
             f.write(gajim_fps[account])
