@@ -15,7 +15,7 @@ from pyparsing import *
 from potr.utils import bytes_to_long
 from potr.compatcrypto import DSAKey
 
-# much of this is copied and pasted from:
+# much of this is based on:
 # https://github.com/guardianproject/otrfileconverter 
 
 def verify_len(t):
@@ -65,7 +65,6 @@ def parse_sexp(data):
 
 def parse(filename):
     """parse the otr.private_key S-Expression and return an OTR dict"""
-
     with open(filename, 'r') as f:
         data = ''.join(line for line in f.readlines())
 
@@ -86,7 +85,7 @@ def parse(filename):
                     key = dict()
                     key['name'] = name.strip()
                     key['resource'] = resource.strip()
-                if element[0] == "protocol":
+                elif element[0] == "protocol":
                     key['protocol'] = element[1]
                 elif element[0] == "private-key":
                     if element[1][0] == 'dsa':
