@@ -32,8 +32,13 @@ Then download and run pidgin2gajim:
 
     git clone https://github.com/micahflee/pidgin2gajim.git
     cd pidgin2gajim
+    virtualenv env  # needs python-virtualenv 
+    . env/bin/activate
+    pip install pyparsing
+    pip install python-potr
     ./pidgin2gajim.py
     ls -l output
+    deactivate
 
 Then overwrite your Gajim OTR keys with the ones that were just created in the output directory. Something like:
 
